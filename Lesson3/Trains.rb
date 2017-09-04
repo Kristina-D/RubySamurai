@@ -39,37 +39,37 @@ class Train
   end
 
   def remove_car
-    @car_count -= 1 if (@speed == 0) && (@car_count > 0)
+    @car_count -= 1 if @speed == 0 && @car_count > 0
   end
 
   def take_route(route)
-    @i = 0
+    @current_index = 0
     @route = route
-    route.stations[0].train_arrives(self)
+    route.stations[@current_index].train_arrives(self)
   end
 
   def forward
     current_station.train_departs(self)
-    @i += 1
+    @current_index += 1
     current_station.train_arrives(self)
   end
 
   def back
     current_station.train_departs(self)
-    @i -= 1
+    @current_index -= 1
     current_station.train_arrives(self)
   end
 
   def current_station
-    @route.stations[@i]
+    @route.stations[@current_index]
   end
 
   def previous_station
-    @route.stations[@i - 1]
+    @route.stations[@current_index - 1]
   end
 
   def next_station
-    @route.stations[@i + 1]
+    @route.stations[@current_index + 1]
   end
 end
 
@@ -87,7 +87,7 @@ class Route
   end
 
   def delete_station(station)
-    return if (@stations.index(station) == 0) || (@stations.index(station) + 1 == @stations.length)
+    return if @stations.index(station) == 0 || @stations.index(station) + 1 == @stations.length
     
     @stations.delete(station)
   end
@@ -113,7 +113,7 @@ def test
   
   route.insert_station(tver)
   route.insert_station(balagoe)
-  route.print
+  #route.print
   
   t1 = Train.new(1, "cargo", 7)
   puts "now no trains in moscow #{moscow.trains}"
@@ -152,6 +152,7 @@ def test2
   t1.add_car
   p t1
   t1.change_speed(-30)
+  t1.change_speed(-350)
   p t1
 
   t1.add_car
