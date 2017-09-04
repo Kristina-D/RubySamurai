@@ -1,6 +1,5 @@
 class Station
-  attr_reader :name
-  attr_reader :trains
+  attr_reader :name, :trains
 
   def initialize(name)
     @name = name
@@ -15,33 +14,13 @@ class Station
     @trains.delete(train)
   end
 
-  def trains_count(type)
-    if trains = @trains.select { |type| type == type }.empty?
-      return
-    else
-      @trains.select { |train| train.type.to_s == type }
-    end
-  end
-
-  def trains_count_print(type)
-    if trains_count(type).nil?
-      puts "Thereare no #{type} trains at the station #{self.name}."
-    else
-      p trains_count(type)
-    end
-  end
-
-  def print
-    puts self.name
+  def trains_by_type(type)
+      @trains.select { |train| train.type == type }
   end
 end
 
 class Train
-  attr_reader :route
-  attr_reader :number
-  attr_reader :type
-  attr_reader :car_count
-  attr_reader :speed
+  attr_reader :route, :number, :type, :car_count, :car_count, :speed
   #so other class can read
 
   def initialize (number, type, car_count)
@@ -51,65 +30,46 @@ class Train
     @speed = 0
   end
 
-  def change_speed(i)
-    if ((i > 0) && (@speed + i < 350)) || ((i < 0) && (@speed + i >= 0))
-      @speed += i
-    else
-      puts "Speed should be between 0 and 350. Current speed: #{@speed}."
-    end
+  def change_speed(delta)
+    @speed = [[@speed + delta, 0].max, 350].min
   end
 
   def add_car
-    if @speed == 0
-      @car_count += 1
-    else
-      return
-    end
+    @car_count += 1 if @speed == 0
   end
 
   def remove_car
-    if (@speed == 0) && (@car_count > 0)
-      @car_count -= 1
-    else
-      return
-    end
+    @car_count -= 1 if (@speed == 0) && (@car_count > 0)
   end
 
-  def takes_route(route)
+  def take_route(route)
+    @i = 0
     @route = route
     route.stations[0].train_arrives(self)
   end
 
   def forward
-    return if next_station.nil?
-
-    station = next_station
     current_station.train_departs(self)
-    station.train_arrives(self)
+    @i += 1
+    current_station.train_arrives(self)
   end
 
   def back
-    return if previous_station.nil?
-
-    station = previous_station
     current_station.train_departs(self)
-    station.train_arrives(self) 
+    @i -= 1
+    current_station.train_arrives(self)
   end
 
   def current_station
-    @route.stations.select { |station| station.trains.include?(self) }.first
-  end
-
-  def current_station_print
-    puts "Current station is #{self.current_station.name}"
+    @route.stations[@i]
   end
 
   def previous_station
-    @route.previous_station(self.current_station)
+    @route.stations[@i - 1]
   end
 
   def next_station
-    @route.next_station(self.current_station)
+    @route.stations[@i + 1]
   end
 end
 
@@ -127,26 +87,18 @@ class Route
   end
 
   def delete_station(station)
+    return if (@stations.index(station) == 0) || (@stations.index(station) + 1 == @stations.length)
+    
     @stations.delete(station)
   end
 
-  def print
-    puts @stations.map(&:name).join(", ")
+  def next_station(index_of_current_station)
+      @stations[index_of_current_station + 1]
   end
 
-  def next_station(station)
-    if (index_of_station = stations.index(station)) == stations.length
-      nil
-    else
-      @stations[index_of_station + 1]
-    end
-  end
-
-  def previous_station(station)
-    if (index_of_station = stations.index(station)) == 0
-      nil
-    else
-      @stations[index_of_station - 1]
+  def previous_station(index_of_current_station)
+    if index_of_current_station > 0
+      @stations[index_of_current_station - 1]
     end
   end
 end
@@ -166,8 +118,7 @@ def test
   t1 = Train.new(1, "cargo", 7)
   puts "now no trains in moscow #{moscow.trains}"
   puts "now no trains in tver #{tver.trains}"
-  #moscow.train_arrives(t1)
-  t1.takes_route(route)
+  t1.take_route(route)
   puts "in Moscow 1 train appears #{moscow.trains}"
   t1.next_station
   t1.current_station
@@ -215,28 +166,3 @@ def test2
   p t1
 end
 
-def test3
-  moscow = Station.new("Moscow")
-  piter = Station.new("Piter")
-  tver = Station.new("Tver")
-  balagoe = Station.new("Balagoe")
-
-  t2 = Train.new(2, "cargo", 8)
-  t3 = Train.new(3, "passenger", 8)
-  route = Route.new(moscow, piter)
-  route.insert_station(tver)
-  route.insert_station(balagoe)
-  route.print
-  route.delete_station(tver)
-  route.print
-  moscow.print
-  tver.train_arrives(t2)
-  tver.trains_count("cargo")
-  tver.trains_count_print("cargo")
-  tver.train_arrives(t3)
-  tver.trains_count_print("passenger")
-  tver.train_departs(t2)
-  tver.train_departs(t3)
-  tver.trains_count_print("cargo")
-  tver.trains_count_print("passenger")
-end
