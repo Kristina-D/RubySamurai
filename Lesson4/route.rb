@@ -14,11 +14,10 @@ class Route
   end
 
   def delete_station(station)
-    if station.nil? ==false
-      return if @route_stations.index(station) == 0 || @route_stations.index(station) + 1 == @route_stations.length
+    return if station.nil?
+    return if @route_stations.index(station) == 0 || @route_stations.index(station) + 1 == @route_stations.length
     
-      @route_stations.delete(station)
-    end
+    @route_stations.delete(station)
   end
 
   def next_station(index_of_current_station)

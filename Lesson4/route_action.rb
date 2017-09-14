@@ -10,7 +10,7 @@ class CreateRouteAction
     puts "Enter name of the last station: "
     last_station_name = gets.chomp.downcase
 
-    @station_names_array = [first_station_name, last_station_name]
+    [first_station_name, last_station_name]
   end
 end
 

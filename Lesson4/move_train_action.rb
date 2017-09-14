@@ -7,21 +7,15 @@ class MoveTrainStation
     puts "Select the number of your action: "
     action_number = gets.chomp
       
-    if "1" == action_number
-
-        if selected_train.current_index < selected_train.tooken_route.stations.length - 1
-            puts "lets move train"
-            selected_train.forward
-            puts "Train's current station is #{selected_train.current_station.station_name}."
-        else
-          puts "Train is on the last station"
-        end
-
-    elsif "2" == action_number
-
-      if selected_train.current_index > 0
-        puts "lets move train"
-        selected_train.back
+    if action_number == "1"
+      if selected_train.forward
+        puts "Train's current station is #{selected_train.current_station.station_name}." 
+      else
+        puts "Train is on the last station"
+      end
+      
+    elsif action_number == "2"
+      if selected_train.back
         puts "Train's current station is #{selected_train.current_station.station_name}."       
       else
         puts "Train is on its first station"

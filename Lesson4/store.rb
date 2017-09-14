@@ -1,14 +1,14 @@
 class Store
-  attr_reader :stations, :print_stations_list, :routes
-  attr_accessor :route_existance,  :routes_list
+  attr_accessor :stations
 
-  def initialize 
+  def initialize
     @stations = []
     @trains = []
     @routes = []
   end
 
-  def call
+  def self
+    puts self
   end
 
   def add_station(station)
@@ -25,16 +25,16 @@ class Store
     if train.nil?
       puts "Train type must be 'cargo' or 'passenger'. Please try again."
     else
-      puts "New #{train.type} train is createed"
+      puts "New #{train.type} train is created"
       @trains << train
       print_trains_list
     end
   end
 
   def add_route
-    if stations.empty?
+    if @stations.empty?
       puts "---NO EXISTING STATIONS----"
-    elsif stations.length > 1
+    elsif @stations.length > 1
       print_stations_list
       station_names = CreateRouteAction.new.call
       
@@ -65,7 +65,9 @@ class Store
       puts "select the number of your route: "
       route_number = gets.chomp
       
-      if route_existance(route_number).nil? == false
+      if route_existance(route_number).nil?
+        puts "Route is not found"
+      else
         selected_route = route_existance(route_number)
 
         puts "1. Add a station in the selected route."
@@ -73,7 +75,7 @@ class Store
         puts "Select the number of your action: "
         action_number = gets.chomp
 
-        if "1" == action_number
+        if action_number == "1" 
           print_stations_list
 
           puts "select the station you want to add to your route: "
@@ -86,15 +88,13 @@ class Store
             selected_route.insert_station(station)
             puts "Station #{station.station_name} is added"
           end
-        elsif "2" == action_number
+        elsif action_number == "2"
           puts "Enter name of the station you want to remove: "
           removing_station_name = gets.chomp.downcase
 
           station_to_remove = station_existance(removing_station_name)
           selected_route.delete_station(station_to_remove)
         end
-      else
-        puts "Route is not found"
       end
     end
   end
@@ -118,9 +118,12 @@ class Store
           puts "Please create a route in order to put a train on it"
         else
           routes_list
-          route_number = SelectRoute.new.call
+          puts "select the number of your route: "
+          route_number = gets.chomp
 
-          if route_existance(route_number).nil? == false
+          if route_existance(route_number).nil?
+            puts "Route is not found"
+          else
             selected_route = route_existance(route_number)
             selected_train.take_route(selected_route)
             puts "Train is on the first station of your route."
@@ -147,17 +150,15 @@ class Store
       action_number = gets.chomp
       
       if "1" == action_number
-
         if selected_train.type == "cargo"
-          car = CargoCar.new
-          selected_train.add_car(car)
+          selected_train.add_car(CargoCar.new)
         elsif selected_train.type == "passenger"
-          car = PassengerCar.new
-          selected_train.add_car(car)
+          selected_train.add_car(PassengerCar.new)
         end
-
+        
         puts "Car is added to the selected train"
         puts "Now selected train has #{selected_train.cars_count} cars."
+
       elsif "2" == action_number
         selected_train.remove_car
         puts "Now selected train has #{selected_train.cars_count} cars."
@@ -207,7 +208,15 @@ class Store
         puts "This station does not exist"
       else
         selected_station = station_existance(selected_station_name)
-        selected_station.train_list_print
+        list =  selected_station.train_list
+
+        if list.empty?
+          puts "There are no trains on this station"
+        else
+          puts "The train list of this station: "
+          list.each {|train| puts "Train - #{train.number} - #{train.type}"}
+        end
+
       end
     end
   end
@@ -225,14 +234,9 @@ class Store
   end
 
   def route_existance(route_number)
-    found_route = nil
-
     if @hash_routes.has_key?(route_number)
-      found_route = @hash_routes[route_number]
-    else
-      puts "Route is not found"
+      @hash_routes[route_number]
     end
-    found_route
   end
 
   def train_existatnce(train_number)

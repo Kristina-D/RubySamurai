@@ -22,13 +22,8 @@ class Station
     @station_name
   end
 
-  def train_list_print
-    if @station_trains.empty?
-      puts "There are no trains on this station"
-    else
-      puts "The train list of this station: "
-      @station_trains.each {|train| puts "Train - #{train.number} - #{train.type}"}
-    end
+  def train_list
+    @station_trains
   end
 
   def station_trains

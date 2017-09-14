@@ -1,5 +1,3 @@
 class Car
-  def type
-    @type
-  end
+  attr_reader :type
 end
