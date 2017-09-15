@@ -1,5 +1,3 @@
-require_relative 'store'
-
 class MoveTrainStation
   def call(selected_train)
     puts "1. Move selected train forward."

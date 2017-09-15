@@ -1,5 +1,3 @@
-require_relative 'store'
-
 class CreateStationAction
   def call
     puts "Enter the name of the Station: "

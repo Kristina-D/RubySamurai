@@ -1,5 +1,3 @@
-require_relative 'store'
-
 class CreateRouteAction
   attr_reader :station_names_array
 

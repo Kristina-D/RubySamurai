@@ -1,5 +1,3 @@
-require_relative 'store'
-
 class CreateTrainAction
   attr_reader :train
 
