@@ -170,7 +170,7 @@ class Interface
       print_trains_list
       puts "Please select a train by its number:"
       train_number = gets.chomp
-      selected_train = train_existatnce(train_number)
+      selected_train = Train.find (train_number)
 
       if selected_train.nil?
         puts "Train is not found"
@@ -206,7 +206,7 @@ class Interface
       print_trains_list
       puts "Please select a train by its number:"
       train_number = gets.chomp
-      selected_train = train_existatnce(train_number)
+      selected_train = Train.find (train_number)
 
       puts "1. Add a car to the selected train."
       puts "2. Remove a car from the selected train."
@@ -244,7 +244,7 @@ class Interface
       print_trains_list
       puts "Please select a train by its number:"
       train_number = gets.chomp
-      selected_train = train_existatnce(train_number)
+      selected_train = Train.find (train_number)
 
       if selected_train.nil?
         puts "Train is not found"
@@ -318,17 +318,6 @@ class Interface
     if @hash_routes.has_key?(route_number)
       @hash_routes[route_number]
     end
-  end
-
-  def train_existatnce(train_number)
-    selected_train = nil
-
-    Train.all.each do |train|
-      if train.number == train_number
-        selected_train = train
-      end
-    end
-    selected_train
   end
 
   def print_trains_list

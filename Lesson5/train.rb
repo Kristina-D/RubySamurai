@@ -8,7 +8,7 @@ class Train
   include Manufacturer
   include InstanceCounter
 
-  @@trains = []
+  @@trains_by_number = {}
 
 
   def initialize (number, type)
@@ -17,22 +17,17 @@ class Train
     @speed = 0
     @cars = []
     @tooken_route
-    @@trains << self
+    @@trains_by_number[number] = self
     register_instance
   end
 
   def self.all
-    @@trains
-    #возвращает все станции (объекты), созданные на данный момент
-  end
-  
-  def self.find (number)
-    #который принимает номер поезда (указанный при его создании)
-    @@trains.find(ifnone = nil) { |train| train.number == number }
+    @@trains_by_number.values
   end
 
-  def self.i_am_class
-    self.number
+  def self.find (number)
+    #который принимает номер поезда (указанный при его создании)
+    @@trains_by_number[number]
   end
 
   def change_speed(delta)
