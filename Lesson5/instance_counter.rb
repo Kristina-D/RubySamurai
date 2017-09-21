@@ -1,11 +1,11 @@
 module InstanceCounter
 
-  class << self
-    def included(base)
-      base.extend ClassMethods
-      base.class_variable_set(:@@counter, 0)
-    end
+  def self.included(base)
+    base.extend ClassMethods
+    base.include InstanceMethods
+    base.class_variable_set(:@@counter, 0)
   end
+
 
   module ClassMethods
     def instances
@@ -16,7 +16,13 @@ module InstanceCounter
   end
 
 private
-  def register_instance
-    self.class.class_variable_set(:@@counter, self.class.class_variable_get(:@@counter) + 1)
+  module InstanceMethods
+    def register_instance
+      self.class.class_variable_set(:@@counter, get_counter + 1)
+    end
+
+    def get_counter
+      self.class.class_variable_get(:@@counter)
+    end
   end
 end

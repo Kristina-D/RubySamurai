@@ -281,7 +281,7 @@ class Interface
   def check_out_stations_list_with_trains
     if Station.all.empty?
       puts "---NO EXISTING STATIONS----"
-    elsif Station.all.length > 0
+    else
       print_stations_list
       puts "Select the station name to display its trains list"
       selected_station_name = gets.chomp
