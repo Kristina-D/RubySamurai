@@ -49,9 +49,12 @@ class Interface
       puts "New station #{station.station_name} is created"
       print_stations_list
     end
+
   end
 
   def add_train
+  attempt = 0
+  begin
     puts "Please enter the train number: "
     number = gets.chomp
 
@@ -59,12 +62,18 @@ class Interface
     type = gets.chomp
 
     train = Train.new(number, type)
-
-    if train != nil
+  rescue RuntimeError => e
+    puts e.message
+    attempt += 1
+    retry if attempt < 3
+  ensure
+    puts "There were #{attempt} attempts"
+  end
+    
+    if train
       puts "New #{train.type} train is created"
       print_trains_list
     end
-
   end
 
   def find_train

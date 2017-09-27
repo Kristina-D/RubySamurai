@@ -15,8 +15,8 @@ module InstanceCounter
     end
   end
 
-private
   module InstanceMethods
+    private
     def register_instance
       self.class.class_variable_set(:@@counter, get_counter + 1)
     end

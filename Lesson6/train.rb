@@ -17,25 +17,13 @@ class Train
 
   def initialize (number, type)
     @number = number
-    @type = type 
-    # begin
-      
-
-    # rescue RuntimeError => e
-    #   puts e
-    #   retry
-    # end
-    if valid?
-      puts "i am valid"
-      @speed = 0
-      @cars = []
-      @tooken_route
-      @@trains_by_number[number] = self
-      register_instance
-    else
-      puts "i am nil"
-      return
-    end
+    @type = type
+    validate!
+    @speed = 0
+    @cars = []
+    @tooken_route
+    @@trains_by_number[number] = self
+    register_instance
   end
 
   def self.all
@@ -118,9 +106,5 @@ class Train
     raise RuntimeError,"Train type must be 'cargo' or 'passenger'. Please try again." if type != "passenger" && @type != "cargo"
     raise RuntimeError, "Train number has invalid format" if number !~ NUMBER_FORMAT
     true
-
-  # rescue RuntimeError => e
-  #   puts e
-  #   false     
   end
 end
