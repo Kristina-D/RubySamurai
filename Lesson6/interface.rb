@@ -60,14 +60,22 @@ class Interface
 
     puts "Please enter the train type (enter cargo or passenger): "
     type = gets.chomp
+    
+    if type == "cargo"
+      subclass = CargoTrain
+    elsif type == "passenger"
+      subclass = PassengerTrain
+    else
+      subclass = Train
+    end
 
-    train = Train.new(number, type)
+    train = subclass.new(number, type)
   rescue RuntimeError => e
     puts e.message
     attempt += 1
     retry if attempt < 3
   ensure
-    puts "There were #{attempt} attempts"
+    puts "There were #{attempt} attempts to create a train. Please try again."
   end
     
     if train
