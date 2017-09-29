@@ -4,12 +4,14 @@ class PassengerCar < Car
   def initialize(number_of_places)
     @type = :passenger
     @number_of_places = number_of_places
+    @free_places = number_of_places
     @occupied_places = 0
   end
 
   def take_place
-    if @number_of_places - @occupied_places > 0
+    if @free_places > 0
       @occupied_places += 1
+      @free_places -= 1
       true
     else
       false
@@ -21,7 +23,7 @@ class PassengerCar < Car
   end
 
   def free_places_counter
-    @number_of_places - @occupied_places
+    @free_places
   end
 
 end

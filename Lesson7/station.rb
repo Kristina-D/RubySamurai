@@ -22,8 +22,8 @@ class Station
     @@stations
   end
 
-  def trains_block(block)
-    @station_trains.each { |train| block.call(train) }
+  def trains_block
+    @station_trains.each { |train| yield(train) }
   end
 
   def train_arrives(train)

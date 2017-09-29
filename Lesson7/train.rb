@@ -35,10 +35,10 @@ class Train
     @@trains_by_number[number]
   end
 
-  def trains_block(block)
-    @station_trains.each { |train| block.call(train) }
+  def each_train
+    @cars.each { |car| yield(car) }
   end
-  
+
   def change_speed(delta)
     @speed = [[@speed + delta, 0].max, 350].min
   end

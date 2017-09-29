@@ -20,11 +20,13 @@ class Interface
       puts "6. Add and remove cars from the trains"
       puts "7. Move train"
       puts "8. Check-out the list of stations and trains on the stations"
-      puts "9. Find train and check-out its cars. Modify the occupied volume/places in cars"
-      puts "10. Exit"      
+      puts "9. Find train and check-out its cars."
+      puts "10. Modify the occupied volume/places in cars"
+      puts "11. List of trains with their cars"
+      puts "12. Exit"      
       puts "Select the number of your action: "
       case gets.chomp
-      when "10" then return
+      when "12" then return
       when "1" then add_station
       when "2" then add_route
       when "3" then modify_route
@@ -34,6 +36,8 @@ class Interface
       when "7" then move_train
       when "8" then check_out_stations_list_with_trains
       when "9" then find_train
+      when "10" then modify_cars
+      when "11" then print_trains_list
       end
     end
   end
@@ -92,69 +96,102 @@ class Interface
       puts "Train cars:"
       train = Train.find(number)
 
-      if train.type == "cargo"
-        train.cars.each_with_index { |car, index| puts "Car number: #{index + 1} type: #{car.type} volume: #{car.volume} occupied volume: #{car.occupied_volume} free volume: #{car.free_volume}" }
+      if train.cars.empty?
+        puts "This train has no cars"
       else
-        train.cars.each_with_index { |car, index| puts "Car number: #{index + 1} type: #{car.type} number of places: #{car.number_of_places} occupied places: #{car.occupied_places_counter} free places: #{car.free_places_counter}" }
-      end
 
-      puts "1. Modify a car."
-      puts "2. Go to principal menu."
-      puts "Select the number of your action: "
-      action_number = gets.chomp
-
-      if action_number == "1" 
-        puts "Enter the car number:"
-        car_number = gets.chomp
-
-        selected_car = find_car(train, car_number)
-
-        if selected_car != nil
-          p selected_car
-          volume = 0
-
-            if train.type == "cargo"
-              puts "Enter the volume you want to take-up: "
-              volume = gets.chomp
-            end
-            modify_cars(selected_car, volume)
+        if train.type == "cargo"
+          train.cars.each_with_index { |car, index| puts "Car number: #{index + 1} - type: #{car.type} - volume: #{car.volume} - occupied volume: #{car.occupied_volume} - free volume: #{car.free_volume}" }
         else
-          puts "Car is not found"
+          train.cars.each_with_index { |car, index| puts "Car number: #{index + 1} - type: #{car.type} - number of places: #{car.number_of_places} - occupied places: #{car.occupied_places_counter} - free places: #{car.free_places_counter}" }
         end
-          # car = train.cars.each_with_index.select { |car, index| index == car_number}.map{|car| car }
-      elsif action_number == "2"
-        menu
       end
+      train
     else
       puts "Train is not found"
     end
   end
 
   def find_car(train, car_number)
-    i = 1
-    selected_car = nil
-    train.cars.each do |car|
+    selected_car = nil 
+    if integer?(car_number)
+      car_number = car_number.to_i
+      i = 1
 
-      if i.to_s == car_number
-        selected_car = car
-      else
-        i += 1
+      train.cars.each do |car|
+
+        if i == car_number
+          selected_car = car
+        else
+          i += 1
+        end
       end
+    else
+      puts "Please an Integer"
+    end
+
+    if selected_car
+      puts "Car is found"
+    else
+      puts "Car is not found"
     end
     selected_car
   end
-  
-  def modify_cars (car, parameter)
-    if integer?(parameter)
-      parameter = parameter.to_i
 
-      car.take(car, parameter)
-      puts "after car.take"
-      p car
-    else
-      puts "Please enter an integer"
+  def modify_cars
+    train = find_train
+
+    if train
+      if train.cars.nil?
+        puts "Impossible to modify a car: train must have at least one car."
+      else
+        if train.type == "cargo"
+          puts "1. Take-up a volume."
+        elsif train.type == "passenger"
+          puts "1. Take a place."
+        end
+
+        puts "2. Go to principal menu."
+        puts "Select the number of your action: "
+        action_number = gets.chomp
+
+        if action_number == "1" 
+          puts "Enter the car number:"
+          car_number = gets.chomp
+
+          selected_car = find_car(train, car_number)
+
+          if selected_car != nil
+            if train.type == "cargo"
+              puts "Enter the volume you want to take-up: "
+              volume = gets.chomp
+
+              if number?(volume)
+                volume = volume.to_f
+                if selected_car.take_up_volume(volume)
+                  puts "Car number: #{car_number} - type: #{selected_car.type} - volume: #{selected_car.volume} - occupied volume: #{selected_car.occupied_volume} - free volume: #{selected_car.free_volume}"
+                else
+                  puts "There is no enough volume"
+                end
+              else
+                puts "Please enter an integer"
+              end
+            else
+              if selected_car.take_place
+                puts "Car number: #{car_number} - type: #{selected_car.type} - number of places: #{selected_car.number_of_places} - occupied places: #{selected_car.occupied_places_counter} - free places: #{selected_car.free_places_counter}"
+              else
+                puts "There is no free places"
+              end
+            end
+          end
+        elsif action_number == "2"
+          menu
+        end
+      end
     end
   end
+
+
 
   def add_route
     if Station.all.empty?
@@ -269,7 +306,6 @@ class Interface
     end
   end
 
-
   def modify_train_cars
     if Train.all.empty?
       puts "---NO EXISTING TRAINS----"
@@ -287,17 +323,29 @@ class Interface
       
         if "1" == action_number
           if selected_train.type == "cargo"
-            subclass = CargoCar 
             puts "Enter the volume car:"
             volume = gets.chomp
-            create_car(selected_train, subclass, volume)
-            puts "volume: #{volume}"
+
+            if number?(volume)
+              volume = volume.to_f
+              selected_train.add_car(CargoCar.new(volume))
+              puts "Cargo car with volume #{volume} is added to the selected train"
+              puts "Now selected train has #{selected_train.cars_count} cars."
+            else
+              puts "Please enter a number (float or intreger)"
+            end
           elsif selected_train.type == "passenger"
-            subclass = PassengerCar
             puts "Enter the number of places in the car:"
             number_of_places = gets.chomp
-            create_car(selected_train, subclass, number_of_places)
-            puts "number of places: #{number_of_places}"
+
+            if integer?(number_of_places)
+              number_of_places = number_of_places.to_i
+              selected_train.add_car(PassengerCar.new(number_of_places))
+              puts "Passenger car with #{number_of_places} places is added to the selected train"
+              puts "Now selected train has #{selected_train.cars_count} cars." 
+            else
+              puts "Please enter an integer"
+            end
           end
 
         elsif "2" == action_number
@@ -310,21 +358,13 @@ class Interface
     end
   end
 
-  def create_car(selected_train, subclass, value)
-    if integer?(value)
-      value = value.to_i
-      selected_train.add_car(subclass.new(value))
-      puts "Car is added to the selected train"
-      puts "Now selected train has #{selected_train.cars_count} cars."
-    else
-      puts "Please enter an integer"
-    end
-  end
-
   def integer?(value)
     value.to_i.to_s == value.to_s
   end
 
+  def number?(value)
+    value.to_f.to_s == value.to_s || value.to_i.to_s == value.to_s
+  end
 
   def move_train
     if Train.all.empty?
@@ -394,7 +434,6 @@ class Interface
           puts "The train list of this station: "
           list.each {|train| puts "Train - #{train.number} - #{train.type} - #{train.cars_count}"}
         end
-
       end
     end
   end
@@ -417,14 +456,29 @@ class Interface
   end
 
   def print_trains_list
-    puts "List of trains:"
-    puts "Train - Number - Type"
-    Train.all.each {|train| puts "Train - #{train.number} - #{train.type}"}
+    puts "List of trains with their cars:"
+    Train.all.each do |train|
+      puts "Train - #{train.number} - #{train.type}"
+      print_cars(train)
+    end
   end
 
+  def print_cars(train)
+    if train.type == "cargo"
+      train.each_train { |car| puts "type: #{car.type} - volume: #{car.volume} - occupied volume: #{car.occupied_volume} - free volume: #{car.free_volume}" }
+    else
+      train.each_train { |car| puts "type: #{car.type} - number of places: #{car.number_of_places} - occupied places: #{car.occupied_places_counter} - free places: #{car.free_places_counter}" }
+    end
+  end
+
+
   def print_stations_list
-    puts "List of stations:"
-    Station.all.each {|station| puts "#{station.station_name}"}
+    puts "List of stations with their trains:"
+    Station.all.each do |station| 
+      puts "#{station.station_name}"
+      station.trains_block {|train| puts "train number: #{train.number} - number of cars: #{train.cars_count}"}
+    end
+
   end
 
   def routes_list
