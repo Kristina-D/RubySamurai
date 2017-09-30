@@ -53,7 +53,6 @@ class Interface
       puts "New station #{station.station_name} is created"
       print_stations_list
     end
-
   end
 
   def add_train
@@ -99,12 +98,7 @@ class Interface
       if train.cars.empty?
         puts "This train has no cars"
       else
-
-        if train.type == "cargo"
-          train.cars.each_with_index { |car, index| puts "Car number: #{index + 1} - type: #{car.type} - volume: #{car.volume} - occupied volume: #{car.occupied_volume} - free volume: #{car.free_volume}" }
-        else
-          train.cars.each_with_index { |car, index| puts "Car number: #{index + 1} - type: #{car.type} - number of places: #{car.number_of_places} - occupied places: #{car.occupied_places_counter} - free places: #{car.free_places_counter}" }
-        end
+      print_cars(train)
       end
       train
     else
@@ -190,8 +184,6 @@ class Interface
       end
     end
   end
-
-
 
   def add_route
     if Station.all.empty?
@@ -465,12 +457,11 @@ class Interface
 
   def print_cars(train)
     if train.type == "cargo"
-      train.each_train { |car| puts "type: #{car.type} - volume: #{car.volume} - occupied volume: #{car.occupied_volume} - free volume: #{car.free_volume}" }
+      train.each_train.with_index { |car, index| puts "car number: #{index + 1} - type: #{car.type} - volume: #{car.volume} - occupied volume: #{car.occupied_volume} - free volume: #{car.free_volume}" }
     else
-      train.each_train { |car| puts "type: #{car.type} - number of places: #{car.number_of_places} - occupied places: #{car.occupied_places_counter} - free places: #{car.free_places_counter}" }
+      train.each_train { |car, index| puts "car number: #{index + 1} - type: #{car.type} - number of places: #{car.number_of_places} - occupied places: #{car.occupied_places_counter} - free places: #{car.free_places_counter}" }
     end
   end
-
 
   def print_stations_list
     puts "List of stations with their trains:"
@@ -478,7 +469,6 @@ class Interface
       puts "#{station.station_name}"
       station.trains_block {|train| puts "train number: #{train.number} - number of cars: #{train.cars_count}"}
     end
-
   end
 
   def routes_list

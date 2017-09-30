@@ -5,13 +5,11 @@ class CargoCar < Car
     @type = :cargo
     @volume = volume
     @occupied_volume = 0
-    @free_volume = volume
   end
 
   def take_up_volume(volume_quantity)
-    if @free_volume >= volume_quantity
+    if @volume - @occupied_volume >= volume_quantity
       @occupied_volume += volume_quantity
-      @free_volume -= volume_quantity
       true
     else
       false
@@ -23,6 +21,6 @@ class CargoCar < Car
   end
 
   def free_volume
-    @free_volume
+    @volume - @occupied_volume
   end
 end
