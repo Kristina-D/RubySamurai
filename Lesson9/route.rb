@@ -16,8 +16,8 @@ class Route
   validate :last_station, :presence
 
   def initialize(start_point, destination)
-    @first_station = start_point
-    @last_station = destination
+    @first_station = start_point.station_name
+    @last_station = destination.station_name
     @route_stations = [start_point, destination]
     validate!
     @@routes << self

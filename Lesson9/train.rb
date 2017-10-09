@@ -21,7 +21,7 @@ class Train
   validate :number, :presence
   validate :type, :presence
   validate :number, :format, NUMBER_FORMAT
-  validate :type, :kinds, :cargo, :passenger
+  #validate :type, :kinds, :cargo, :passenger
 
   def initialize(number, type)
     @number = number
